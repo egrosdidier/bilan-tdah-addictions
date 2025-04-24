@@ -5,11 +5,29 @@ import streamlit as st
 if 'bilan_data' not in st.session_state:
     st.session_state['bilan_data'] = {}
 
-st.title("📝 Saisie des questionnaires - Bilan TDAH & Addictions")
+st.title("📝 Bilan initial - TDAH, Addictions et Comorbidités")
 
 # Identifiant pseudonyme
 pseudo = st.text_input("Entrez un pseudonyme :", value=st.session_state['bilan_data'].get("pseudo", ""))
 st.session_state['bilan_data']['pseudo'] = pseudo
+
+# HADS - affichée en premier avec message introductif
+st.header("😟 Anxiété et humeur")
+st.markdown("**Tout d'abord, nous vous proposons d'évaluer avec vous votre anxiété et votre moral :**")
+
+hads_a_score = 0
+hads_d_score = 0
+for i in range(14):
+    label = f"HADS Anxiété {i+1}" if i < 7 else f"HADS Dépression {i-6}"
+    val = st.radio(label, ["Pas du tout", "Parfois", "Souvent", "Très souvent"], key=f"hads_{i}")
+    score = ["Pas du tout", "Parfois", "Souvent", "Très souvent"].index(val)
+    if i < 7:
+        hads_a_score += score
+    else:
+        hads_d_score += score
+st.session_state['bilan_data']['hads_a_score'] = hads_a_score
+st.session_state['bilan_data']['hads_d_score'] = hads_d_score
+st.write(f"Score HADS-A : {hads_a_score} / HADS-D : {hads_d_score}")
 
 # WURS-25
 st.header("🧠 WURS-25")
@@ -49,22 +67,6 @@ for i in range(10):
 st.session_state['bilan_data']['dast_score'] = dast_score
 st.write(f"Score DAST : {dast_score}")
 
-# HADS
-st.header("😟 HADS")
-hads_a_score = 0
-hads_d_score = 0
-for i in range(14):
-    label = f"HADS Anxiété {i+1}" if i < 7 else f"HADS Dépression {i-6}"
-    val = st.radio(label, ["Pas du tout", "Parfois", "Souvent", "Très souvent"], key=f"hads_{i}")
-    score = ["Pas du tout", "Parfois", "Souvent", "Très souvent"].index(val)
-    if i < 7:
-        hads_a_score += score
-    else:
-        hads_d_score += score
-st.session_state['bilan_data']['hads_a_score'] = hads_a_score
-st.session_state['bilan_data']['hads_d_score'] = hads_d_score
-st.write(f"Score HADS-A : {hads_a_score} / HADS-D : {hads_d_score}")
-
 # ICJE
 st.header("🎰 ICJE")
 icje_score = 0
@@ -95,4 +97,4 @@ for i, item in enumerate(mini_items):
         mini_positive.append(item)
 st.session_state['bilan_data']['mini_positive'] = mini_positive
 
-st.success("✅ Données enregistrées en session. Rendez-vous sur l'onglet Synthèse.")
+st.success("✅ Données enregistrées. Rendez-vous sur l'onglet Synthèse.")
